@@ -108,7 +108,7 @@ export const chat = async (messages) => {
 export const chatStream = async function* (messages) {
     try {
         const stream = await client.chat.completions.create({
-            model: config.deepseek.model,
+            model: 'deepseek-chat',
             messages: [
                 { role: 'system', content: SYSTEM_PROMPT },
                 ...messages
