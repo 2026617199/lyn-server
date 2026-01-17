@@ -1,4 +1,8 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+
+const SALT_ROUNDS = 10;
+
 
 const userSchema = new mongoose.Schema({
     // 基础信息
@@ -79,6 +83,16 @@ const userSchema = new mongoose.Schema({
     collection: 'users'
 });
 
+// 保存前自动加密密码
+userSchema.pre('save', async function (next) {
+    // 只在密码字段被修改且不是明文哈希时加密
+    if (this.isModified('password') && this.password && this.password.length < 60) {
+        this.password = await bcrypt.hash(this.password, SALT_ROUNDS);
+    }
+    next();
+});
+
+
 // 更新最后活跃时间
 userSchema.methods.updateLastActive = function () {
     this.lastActiveAt = new Date();
@@ -102,9 +116,13 @@ userSchema.methods.updateLoginInfo = function () {
     return this.save();
 };
 
-// 验证密码（明文比较）
-userSchema.methods.verifyPassword = function (inputPassword) {
-    return inputPassword === this.password;
+// 验证密码（使用 bcrypt 比较）
+userSchema.methods.verifyPassword = async function (inputPassword) {
+    // 如果密码是明文（旧的兼容处理），先加密再比较
+    if (!this.password || this.password.length < 60) {
+        return inputPassword === this.password;
+    }
+    return bcrypt.compare(inputPassword, this.password);
 };
 
 // 转换为安全的用户对象（不包含密码）

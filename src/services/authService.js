@@ -54,8 +54,9 @@ export const register = async (registerData) => {
         // 创建新用户
         const newUser = new User({
             username,
-            password, // 明文存储
+            password, // 密码会在 User 模型中自动加密
             userType: 'registered',
+
             role: 'user',
             sessionId,
             loginCount: 0

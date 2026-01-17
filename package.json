@@ -32,8 +32,10 @@
         "mongoose": "^8.0.3",
         "openai": "^6.10.0",
         "swagger-jsdoc": "^6.2.8",
+        "bcryptjs": "^2.4.3",
         "uuid": "^9.0.1"
     },
+
     "devDependencies": {
         "eslint": "^8.56.0",
         "nodemon": "^3.0.2"
